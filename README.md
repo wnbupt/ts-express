@@ -15,12 +15,16 @@ $ cd myapp && npm install
 the project seems like:
 ```
 ├─bin
+│ ├─www
+├─node_modules
 ├─public
 │  ├─images
 │  ├─javascripts
 │  └─stylesheets
 ├─routes
-└─views
+├─views
+├─app.js
+└─package.json
 ```
 
 ### step 2: install typescript in this project
@@ -38,7 +42,7 @@ $ npm install typescript -g
 $ tsc --init
 ```
 
-then you will see there is a new file named tsconfig.json.
+then you will see there is a new file named `tsconfig.json`.
 here are my settings
 
 ```
@@ -63,7 +67,7 @@ here are my settings
 }
 ```
 
-except tsconfig.json, in order to lint your ts code,you should create another file named tslint.json
+except `tsconfig.json`, in order to lint your ts code,you should create `tslint.json`
 
 ```
 {
@@ -178,8 +182,82 @@ except tsconfig.json, in order to lint your ts code,you should create another fi
 
 * change file ext of `app.js` and all js file below `routes/` to js
 
-emm...
-A picture with all types of error
+### step 5: delete `bin/www` and move listen function to `app.ts`
+
+```app.ts
+import * as createError from 'http-errors';
+import * as express from 'express'
+import * as path from 'path'
+import * as cookieParser from 'cookie-parser'
+import * as bodyParser from 'body-parser'
+import * as logger from 'morgan'
+
+import * as indexRouter from './routes/index'
+import * as usersRouter from './routes/users'
+
+const app = express();
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', indexRouter.test);
+app.get('/users', usersRouter.test);
+
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function (err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+app.listen(3000, async () => {
+  console.log(`Express Server listening on port ${3000}`)
+})
+// module.exports = app;
 
 
-### step 5: delete bin/www and move listen to app.ts
+```
+
+### step 6: edit `/routes/index.ts` and `/routes/users.ts`
+
+``` index.ts
+export const test = function (req, res) {
+    res.render('index', { title: 'Express' });
+}
+```
+
+``` users.ts
+export const test = function (req, res) {
+    res.render('index', { title: 'Express' });
+}
+```
+
+### step 7: edit `package.json` 
+```package.json
+"scripts": {
+    "start": "ts-node app.ts"
+},
+```
+
+### step 8: there are so many steps, just clone to use!
+```
+$ git clone git@github.com:wnbupt/ts-express.git
+$ npm install
+$ npm run start
+```
