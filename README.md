@@ -9,7 +9,6 @@ A ts-based express generator
 $ npm install express-generator -g
 $ express --view=pug myapp
 $ cd myapp && npm install
-
 ```
 
 the project seems like:
@@ -230,8 +229,6 @@ app.listen(3000, async () => {
   console.log(`Express Server listening on port ${3000}`)
 })
 // module.exports = app;
-
-
 ```
 
 ### step 6: edit `/routes/index.ts` and `/routes/users.ts`
